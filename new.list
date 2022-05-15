@@ -8,3 +8,4 @@ DOMAIN-SUFFIX,tokuwaka.tokuwakana.workers.dev
 MATCH,https://black-mountain-456d.mm1jgasnio.workers.dev/
 MATCH,https://tokuwaka.tokuwakana.workers.dev/
 DOMAIN-SUFFIX,time.windows.com
+DOMAIN-SUFFIX,twc.trafficmanager.net
