@@ -1,9 +1,2 @@
-#NAME:Microsoft
-#AUTHOR:blackmatrix7
-#REPO:https://github.com/blackmatrix7/ios_rule_script
-#UPDATED:2022-02-1116:03:17
-#PROCESS-NAME:2
-#DOMAIN-SUFFIX:417
-#DOMAIN-KEYWORD:4
-#TOTAL:423
-DOMAIN-SUFFIX,learn.open.com.cn
+#NAME:zilian
+DOMAIN-SUFFIX,b.lnk0.com
