@@ -8,4 +8,4 @@ DOMAIN-SUFFIX,frp.104300.xyz
 DOMAIN-SUFFIX,openai.com 
 DOMAIN-SUFFIX,cdctel.com
 DOMAIN-SUFFIX,naifei.pro
-DOMAIN-KEYWORD,*.translate.googleapis.com
+DOMAIN-KEYWORD,translate.googleapis.com
