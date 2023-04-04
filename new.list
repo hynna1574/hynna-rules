@@ -10,3 +10,4 @@ DOMAIN-SUFFIX,openai.com
 DOMAIN-SUFFIX,cdctel.com
 DOMAIN-SUFFIX,naifei.pro
 DOMAIN-SUFFIX,translate.googleapis.com
+IP-CIDR,172.217.204.90/16,no-resolve
