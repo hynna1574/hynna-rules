@@ -619,11 +619,11 @@
       },
       {
         "rule_set": "geosite-mail",
-        "outbound": "Domestic"
+        "outbound": "Proxy"
       },
       {
         "rule_set": "geosite-cn",
-        "outbound": "Proxy"
+        "outbound": "Domestic"
       }
     ],
     "rule_set": [
