@@ -618,8 +618,12 @@
         "outbound": "Domestic"
       },
       {
-        "rule_set": "geosite-cn",
+        "rule_set": "geosite-mail",
         "outbound": "Domestic"
+      },
+      {
+        "rule_set": "geosite-cn",
+        "outbound": "Proxy"
       }
     ],
     "rule_set": [
@@ -698,6 +702,13 @@
         "type": "remote",
         "format": "binary",
         "url": "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/youtube.srs",
+        "download_detour": "direct"
+      },
+     {
+        "tag": "geosite-mail",
+        "type": "remote",
+        "format": "binary",
+        "url": "https://testingcf.jsdelivr.net/gh/tokuwakana/sing-box-geosite/main/rule/Mail.srs",
         "download_detour": "direct"
       },
       {
