@@ -8,3 +8,10 @@ HOST, gg.caixin.com
 HOST, sdkapp.uve.weibo.com
 HOST-suffix, ucweb.com
 HOST-suffix, kuwo.cn
+DOMAIN-SUFFIX,dl.delivery.mp.microsoft.com
+DOMAIN-SUFFIX,update.microsoft.com
+DOMAIN-SUFFIX,windowsupdate.com
+DOMAIN-SUFFIX,windowsupdate.microsoft.com
+DOMAIN,download.microsoft.com
+DOMAIN,wustat.windows.com
+DOMAIN,ntservicepack.microsoft.com
