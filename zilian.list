@@ -3,3 +3,8 @@ DOMAIN-SUFFIX,b.lnk0.com
 DOMAIN-SUFFIX,pinduoduo.com
 DOMAIN-SUFFIX,yangkeduo.com
 DOMAIN-SUFFIX,myunidays.uk
+HOST, ad.12306.cn
+HOST, gg.caixin.com
+HOST, sdkapp.uve.weibo.com
+HOST-suffix, ucweb.com
+HOST-suffix, kuwo.cn
