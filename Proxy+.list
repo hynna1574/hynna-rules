@@ -9,8 +9,6 @@ DOMAIN,translate.googleapis.com
 DOMAIN,blog.misaka.rest
 DOMAIN,mobile.launchdarkly.com
 DOMAIN,open-ai-chat-omega.vercel.app
-DOMAIN,search.arc.net
-DOMAIN,teacat5.com
 DOMAIN,t3.hq668.shop
 DOMAIN,hlj.fun
 DOMAIN,img.killcovid2021.com
@@ -26,9 +24,8 @@ DOMAIN-SUFFIX,doubanio.com
 DOMAIN-SUFFIX,kin6c1.com
 DOMAIN-SUFFIX,iz8qkg.com
 DOMAIN-SUFFIX,v82u1l.com
-DOMAIN-SUFFIX,haiwaikan.com
-DOMAIN-SUFFIX,openai.com 
-DOMAIN-KEYWORD,railway
+DOMAIN-SUFFIX,haiwaikan.com 
 DOMAIN-SUFFIX,cdctel.com
 DOMAIN-SUFFIX,naifei.pro
 DOMAIN-KEYWORD,rsshub
+DOMAIN-KEYWORD,railway
