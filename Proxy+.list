@@ -3,12 +3,8 @@ DOMAIN,twc.trafficmanager.net
 DOMAIN,teacat.cloud
 DOMAIN,maker-cloud.cc
 DOMAIN-SUFFIX,githubusercontent.com
-DOMAIN-KEYWORD,railway
 DOMAIN,frp.104300.xyz
-DOMAIN-SUFFIX,openai.com 
-DOMAIN-SUFFIX,cdctel.com
-DOMAIN-KEYWORD,rsshub
-DOMAIN-SUFFIX,naifei.pro
+DOMAIN,sub.v1.mk
 DOMAIN,translate.googleapis.com
 DOMAIN,blog.misaka.rest
 DOMAIN,mobile.launchdarkly.com
@@ -31,4 +27,8 @@ DOMAIN-SUFFIX,kin6c1.com
 DOMAIN-SUFFIX,iz8qkg.com
 DOMAIN-SUFFIX,v82u1l.com
 DOMAIN-SUFFIX,haiwaikan.com
-DOMAIN,sub.v1.mk
+DOMAIN-SUFFIX,openai.com 
+DOMAIN-KEYWORD,railway
+DOMAIN-SUFFIX,cdctel.com
+DOMAIN-SUFFIX,naifei.pro
+DOMAIN-KEYWORD,rsshub
