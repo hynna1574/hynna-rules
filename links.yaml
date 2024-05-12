@@ -14,6 +14,8 @@ ipv6: false #软路由上不建议开启
 # external-ui: .\ui\public
 
 geodata-mode: true
+geo-auto-update: true
+geo-update-interval: 24
 geox-url:                           # 自定义 geodata url, 需要有代理的前提才能下载geoip和geosite
     geoip: "https://gcore.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geoip.dat"
     geosite: "https://gcore.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geosite.dat"
@@ -40,6 +42,7 @@ dns:
     default-nameserver:
         - 192.168.31.1 # 如果是windows或安卓客户端可使用system，如果是软路由填写你的光猫的IP地址，拨号的路由器的IP地址 DNS 不必关闭光猫的ipv6功能,openclash运行在主路由上时填写任意公共DNS 记住是替换，不要保留system
         - 223.5.5.5
+    enhanced-mode: fake-ip
     fake-ip-range: 198.18.0.1/16
     fake-ip-filter:   #这里可以填写不使用fakeip的域名
         - '*.lan'
@@ -116,7 +119,7 @@ dns:
         - '+.xboxlive.com'
         # === Other ===
         ## QQ Quick Login
-        - 'localDOMAIN.ptlogin2.qq.com'
+        - 'localhost.ptlogin2.qq.com'
         ## Golang
         - 'proxy.golang.org'
         ## STUN Server
@@ -138,7 +141,7 @@ dns:
         - '*.jd.com'
     
     nameserver:
-        - 192.168.31.1 # 如果是windows或安卓客户端可使用system，如果是软路由填写你的光猫的IP地址，拨号的路由器的IP地址 DNS 不必关闭光猫的ipv6功能,openclash运行在主路由上时填写任意公共DNS 记住是替换，不要保留system
+        - system # 如果是windows或安卓客户端可使用system，如果是软路由填写你的光猫的IP地址，拨号的路由器的IP地址 DNS 不必关闭光猫的ipv6功能,openclash运行在主路由上时填写任意公共DNS 记住是替换，不要保留system
         - 114.114.114.114 # default value
         - 223.5.5.5
         - https://dns.alidns.com/dns-query#h3=true # 强制 HTTP/3，与 perfer-h3 无关，强制开启 DoH 的 HTTP/3 支持，若不支持将无法使用
@@ -162,7 +165,7 @@ proxy-groups:
       proxies:
           - "DIRECT"  
       use:
-          - subscribe_groups  
+          - subscribe  
 # chatgpt      
     - name: "OpenAI"
       type: select 
@@ -176,7 +179,7 @@ proxy-groups:
       type: url-test 
       proxies:
       use:
-          - subscribe_groups 
+          - subscribe 
       url: "http://connectivitycheck.gstatic.com/generate_204"
       interval: 177    #自动测速周期，单位：秒  
 #final    
@@ -192,8 +195,8 @@ proxy-groups:
           
 #代理集  如果是自建节点屏蔽这里  
 proxy-providers:
-    #自定义机场名称subscribe_groups
-    subscribe_groups:
+    #自定义机场名称subscribe
+    subscribe:
         type: http # http 的 path 可空置,默认储存路径为 homedir的proxies文件夹,文件名为url的md5
         url: "https://rssteacat1.xyz/api/v1/client/subscribe?token=26de534f2c8cbf15f6e28e2467278aef" #订阅链接存放在双引号内
         interval: 86400 #机场订阅自动更新时间 单位：秒
@@ -203,6 +206,7 @@ proxy-providers:
             interval: 165
             # lazy: true
             url: http://connectivitycheck.gstatic.com/generate_204
+      
       
 #规则集
 rule-providers:     
@@ -230,12 +234,6 @@ rule-providers:
         interval: 86400
         path: ./ruleset/applications.yaml
         url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/applications.txt"
-    google:
-        type: http
-        behavior: domain
-        interval: 86400
-        path: ./ruleset/google.yaml
-        url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/google.txt"
     icloud:
         type: http
         behavior: domain
@@ -319,7 +317,7 @@ rules:
     - DOMAIN-SUFFIX,naifei.pro,PROXY
     - DOMAIN-KEYWORD,rsshub,PROXY
     - DOMAIN-KEYWORD,railway,PROXY
-    
+#在这里添加自定义直连规则
     - DOMAIN,xn--ngstr-lra8j.com,PROXY
     - DOMAIN,services.googleapis.cn,PROXY
     - DOMAIN,mtalk.google.com,PROXY
@@ -361,7 +359,6 @@ rules:
     - GEOSITE,google,PROXY
     - GEOSITE,category-scholar-!cn,PROXY
     - GEOSITE,geolocation-!cn,PROXY
-    - RULE-SET,google,PROXY
     - RULE-SET,gfw,PROXY
     - RULE-SET,direct,DIRECT
     - RULE-SET,lancidr,DIRECT
