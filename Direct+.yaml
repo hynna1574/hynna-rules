@@ -1,0 +1,17 @@
+payload:
+    - DOMAIN-SUFFIX,b.lnk0.com
+    - DOMAIN-SUFFIX,pinduoduo.com
+    - DOMAIN-SUFFIX,yangkeduo.com
+    - DOMAIN-SUFFIX,myunidays.uk
+    - DOMAIN,ad.12306.cn
+    - DOMAIN,gg.caixin.com
+    - DOMAIN,sdkapp.uve.weibo.com
+    - DOMAIN-SUFFIX,ucweb.com
+    - DOMAIN-SUFFIX,kuwo.cn
+    - DOMAIN-SUFFIX,dl.delivery.mp.microsoft.com
+    - DOMAIN-SUFFIX,update.microsoft.com
+    - DOMAIN-SUFFIX,windowsupdate.com
+    - DOMAIN-SUFFIX,windowsupdate.microsoft.com
+    - DOMAIN,download.microsoft.com
+    - DOMAIN,wustat.windows.com
+    - DOMAIN,ntservicepack.microsoft.com
