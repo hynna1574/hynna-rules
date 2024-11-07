@@ -1,266 +1,251 @@
-# url 里填写自己的订阅,名称不能重复
-proxy-providers:
-  provider1:
-    url: ""
-    type: http
-    interval: 86400
-    health-check: {enable: true,url: "https://www.gstatic.com/generate_204",interval: 300}
-    override:
-      additional-prefix: "[provider1]"
+#此配置搭配openclash meta内核使用
+mixed-port: 7890 # 局域网访问Port
+bind-address: '*' #绑定IP地址
+allow-lan: true # 允许局域网访问
+mode: rule # 模式
+log-level: warning # 日志等级
+external-controller: 0.0.0.0:9090 # 网页端口
+find-process-mode: strict   # 匹配所有进程
+tcp-concurrent: true # tcp 并发模式
+ipv6: false #软路由上不建议开启
 
-  provider2:
-    url: ""
-    type: http
-    interval: 86400
-    health-check: {enable: true,url: "https://www.gstatic.com/generate_204",interval: 300}
-    override:
-      additional-prefix: "[provider2]"
+# ui部分
+# secret: ""
+# external-ui: .\ui\public
 
-proxies: 
-  - name: "直连"
-    type: direct
-    udp: true
+#自动更新geoip和geosite文件
+geodata-mode: true
+geo-auto-update: true
+geo-update-interval: 24
 
-mixed-port: 7890
-ipv6: true
-allow-lan: true
-unified-delay: false
-tcp-concurrent: true
-external-controller: 127.0.0.1:9090
-external-ui: ui
-external-ui-url: "https://github.com/MetaCubeX/metacubexd/archive/refs/heads/gh-pages.zip"
+geox-url:                           # 自定义 geodata url, 需要有代理的前提才能下载geoip和geosite
+    geoip: "https://cdn.jsdelivr.net/gh/Loyalsoldier/v2ray-rules-dat@release/geoip.dat"
+    geosite: "https://cdn.jsdelivr.net/gh/Loyalsoldier/v2ray-rules-dat@release/geosite.dat"
+    mmdb: "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/country.mmdb"
 
-find-process-mode: strict
-global-client-fingerprint: chrome
-
+keep-alive-interval: 15
+# fakeip 本地存储，省略DNS查询
 profile:
-  store-selected: true
-  store-fake-ip: true
+    store-selected: true      # 存储 select 选择记录
+    store-fake-ip: true        # 持久化 fake-ip
 
-sniffer:
-  enable: true
-  sniff:
-    HTTP:
-      ports: [80, 8080-8880]
-      override-destination: true
-    TLS:
-      ports: [443, 8443]
-    QUIC:
-      ports: [443, 8443]
-  skip-domain:
-    - "Mijia Cloud"
-    - "+.push.apple.com"
-
+# Tun 配置 Windows使用
 tun:
-  enable: true
-  stack: mixed
-  dns-hijack:
-    - "any:53"
-    - "tcp://any:53"
-  auto-route: true
-  auto-redirect: true
-  auto-detect-interface: true
+    enable: false  #PC端开启 路由器不开启
+    stack: mixed # gvisor / lwip
+    dns-hijack:
+        - 0.0.0.0:53 # 需要劫持的 DNS
+    auto-route: true # 自动设置全局路由，可以自动将全局流量路由进入tun网卡。
+    auto-detect-interface: true # 自动识别出口网卡
+    endpoint-independent-nat: true
+    inet4-route-address: # 启用 auto-route 时使用自定义路由而不是默认路由
+        - 0.0.0.0/1
+        - 128.0.0.0/1
+#  inet6-route-address: # 启用 auto-route 时使用自定义路由而不是默认路由
+#    - "::/1"
+#    - "8000::/1"
 
 dns:
-  enable: true
-  ipv6: true
-  respect-rules: true
-  enhanced-mode: fake-ip
-  fake-ip-filter:
-    - "*"
-    - "+.lan"
-    - "+.local"
-    - "+.market.xiaomi.com"
-  nameserver:
-    - https://120.53.53.53/dns-query
-    - https://223.5.5.5/dns-query
-  proxy-server-nameserver:
-    - https://120.53.53.53/dns-query
-    - https://223.5.5.5/dns-query
-  nameserver-policy:
-    "rule-set:cn_domain,private_domain":
-      - https://120.53.53.53/dns-query
-      - https://223.5.5.5/dns-query
-    "rule-set:geolocation-!cn":
-      - "https://dns.cloudflare.com/dns-query"
-      - "https://dns.google/dns-query"
+    enable: true # 关闭将使用系统 DNS
+    prefer-h3: true # 开启 DoH 支持 HTTP/3，将并发尝试
+    listen: ':53' # 开启 DNS 服务器监听
+    default-nameserver:
+        - 114.114.114.114
+        - 8.8.8.8
+        - tls://223.5.5.5:853
+        - 192.168.31.1 # 如果是windows或安卓客户端可使用system，如果是软路由填写你的拨号光猫/路由器的IP地址
+
+    enhanced-mode: fake-ip
+    fake-ip-range: 198.18.0.1/16
+    fake-ip-filter:   #这里可以填写不使用fakeip的域名
+        - '*.lan'
+        - '*.battlenet.com.cn'
+        - '*.battlenet.com'
+        - '*.blzstatic.cn'
+        - '*.battle.net'
+        # === Linksys Wireless Router ===
+        - '*.linksys.com'
+        - '*.linksyssmartwifi.com'
+        # === Apple Software Update Service ===
+        - swscan.apple.com
+        - mesu.apple.com
+        # === Windows 10 Connnect Detection ===
+        - '*.msftconnecttest.com'
+        - '*.msftncsi.com'
+        # === NTP Service ===
+        - 'time.*.com'
+        - 'time.*.gov'
+        - 'time.*.edu.cn'
+        - 'time.*.apple.com'
+        - 'time1.*.com'
+        - 'time2.*.com'
+        - 'time3.*.com'
+        - 'time4.*.com'
+        - 'time5.*.com'
+        - 'time6.*.com'
+        - 'time7.*.com'
+        - 'ntp.*.com'
+        - 'ntp.*.com'
+        - 'ntp1.*.com'
+        - 'ntp2.*.com'
+        - 'ntp3.*.com'
+        - 'ntp4.*.com'
+        - 'ntp5.*.com'
+        - 'ntp6.*.com'
+        - 'ntp7.*.com'
+        - '*.time.edu.cn'
+        - '*.ntp.org.cn'
+        - '+.pool.ntp.org'
+        - time1.cloud.tencent.com
+        # === Music Service ===
+        ## NetEase
+        - '+.music.163.com'
+        - '*.126.net'
+        ## Baidu
+        - musicapi.taihe.com
+        - music.taihe.com
+        ## Kugou
+        - songsearch.kugou.com
+        - trackercdn.kugou.com
+        ## Kuwo
+        - '*.kuwo.cn'
+        ## JOOX
+        - api-jooxtt.sanook.com
+        - api.joox.com
+        - joox.com
+        ## QQ
+        - '*.qq.com'
+        - report.url.cn
+        ## Xiami
+        - '*.xiami.com'
+        ## Migu
+        - '+.music.migu.cn'
+        # === Game Service ===
+        ## Nintendo Switch
+        - '+.srv.nintendo.net'
+        ## Sony PlayStation
+        - '+.playstation.net'
+        - '+.playstation.com'
+        - '+.stun.playstation.net'
+        ## Microsoft Xbox
+        - 'xbox.*.microsoft.com'
+        - '+.xboxlive.com'
+        # === Other ===
+        ## QQ Quick Login
+        - localhost.ptlogin2.qq.com
+        ## Golang
+        - proxy.golang.org
+        ## STUN Server
+        - 'stun.*.*'
+        - 'stun.*.*.*'
+        ## Bilibili CDN
+        - '*.mcdn.bilivideo.cn'
+        # === Other ===
+        - '*.bilibili.com'
+        - '*.1huizhan.com'
+        - '*.3.cn'
+        - '*.300hu.com'
+        - '*.360buy.cn'
+        - '*.360buy.com'
+        - '*.360buy.com.cn'
+        - '*.360buyimg.com'
+        - '*.360buyinternational.com'
+        - '*.360top.com'
+        - '*.jd.com'
+        # WiFi-Calling 如果你发现你的WiFi Calling不能发图片 大概率是节点UDP问题
+        - t-mobile.com
+        - crl.t-mobile.com
+        - eas3.msg.t-mobile.com
+        - mascns.t-mobile.com
+        - ns.sipgeo.t-mobile.com
+        - epdg.epc.mnc240.mcc310.pub.3gppnetwork.org
+        - epdg.epc.mnc260.mcc310.pub.3gppnetwork.org
+        - ss.epdg.epc.mnc260.mcc310.pub.3gppnetwork.org
+        - ss.epdg.epc.geo.mnc260.mcc310.pub.3gppnetwork.org 
+        # Hygege提供
+        - services.googleapis.cn
+        - xn--ngstr-lra8j.com
+        
+    
+    nameserver:
+        - 114.114.114.114 # default value
+        - 8.8.8.8
+        - tls://223.5.5.5:853 # DNS over TLS
+        - https://doh.pub/dns-query
+        - https://dns.alidns.com/dns-query#h3=true 
+        - 192.168.31.1
+
+ # 锚点
+#pg: &pg {type: select, proxies: [Proxy, Manual, OpenAI, Streaming, Auto-Urltest, FINAL, DIRECT]}
+p: &p {type: http, interval: 86400, health-check: {enable: true, url:  http://www.gstatic.com/generate_204, interval: 300}}
+auto: &auto {type: url-test, interval: 300, tolerance: 20, lazy: true, url: 'http://www.gstatic.com/generate_204', disable-udp: false, timeout: 2000, max-failed-times: 3, hidden: true, include-all-providers: true}
+select: &select {type: select, use: [Subscribe]}
+#规则类
+c: &c {type: http, behavior: classical, interval: 86400, format: text}
+d: &d {type: http, behavior: domain, interval: 86400, format: text}
+i: &i {type: http, behavior: ipcidr, interval: 86400, format: mrs}
+
+proxy-providers:
+  Subscribe: {<<: *p, path: ./proxy-providers/Sub.yaml, url: https://submit.xz61.cn:22443/api/v1/client/subscribe?token=afdc1ad4db748413e0d740a883248e77}
+       
+               
+proxies: null
 
 proxy-groups:
+  #分流分组
+  - {name: Domestic, type: select, proxies: [DIRECT, Auto-Urltest, Manual]}
+  
+  - {name: Proxy, type: select, proxies: [Auto-Urltest, Manual, DIRECT]}
+  
+  - {name: Manual, <<: *select}
+  
+  - {name: OpenAI, type: select, proxies: [Manual, Auto-Urltest, DIRECT]}
+  
+  - {name: Streaming, type: select, proxies: [Auto-Urltest, Manual, DIRECT]}
+  
+  - {name: Auto-Urltest, <<: *auto}
+  
+  - {name: FINAL, type: select, proxies: [DIRECT, Auto-Urltest, Manual]}
 
-  - name: 默认
-    type: select
-    proxies: [自动选择,直连,香港,台湾,日本,新加坡,美国,其它地区,全部节点]
-
-  - name: Google
-    type: select
-    proxies: [默认,香港,台湾,日本,新加坡,美国,其它地区,全部节点,自动选择,直连]
-
-  - name: Telegram
-    type: select
-    proxies: [默认,香港,台湾,日本,新加坡,美国,其它地区,全部节点,自动选择,直连]
-
-  - name: Twitter
-    type: select
-    proxies: [默认,香港,台湾,日本,新加坡,美国,其它地区,全部节点,自动选择,直连]
-
-  - name: 哔哩哔哩
-    type: select
-    proxies: [默认,香港,台湾,日本,新加坡,美国,其它地区,全部节点,自动选择,直连]
-
-  - name: 巴哈姆特
-    type: select
-    proxies: [默认,香港,台湾,日本,新加坡,美国,其它地区,全部节点,自动选择,直连]
-
-  - name: YouTube
-    type: select
-    proxies: [默认,香港,台湾,日本,新加坡,美国,其它地区,全部节点,自动选择,直连]
-
-  - name: NETFLIX
-    type: select
-    proxies: [默认,香港,台湾,日本,新加坡,美国,其它地区,全部节点,自动选择,直连]
-
-  - name: Spotify
-    type: select
-    proxies:  [默认,香港,台湾,日本,新加坡,美国,其它地区,全部节点,自动选择,直连]
-
-  - name: Github
-    type: select
-    proxies:  [默认,香港,台湾,日本,新加坡,美国,其它地区,全部节点,自动选择,直连]
-
-  - name: 国内
-    type: select
-    proxies:  [直连,默认,香港,台湾,日本,新加坡,美国,其它地区,全部节点,自动选择]
-
-  - name: 其他
-    type: select
-    proxies:  [默认,香港,台湾,日本,新加坡,美国,其它地区,全部节点,自动选择,直连]
-
-  #分隔,下面是地区分组
-  - name: 香港
-    type: select
-    include-all: true
-    filter: "(?i)港|hk|hongkong|hong kong"
-
-  - name: 台湾
-    type: select
-    include-all: true
-    filter: "(?i)台|tw|taiwan"
-
-  - name: 日本
-    type: select
-    include-all: true
-    filter: "(?i)日|jp|japan"
-
-  - name: 美国
-    type: select
-    include-all: true
-    filter: "(?i)美|us|unitedstates|united states"
-
-  - name: 新加坡
-    type: select
-    include-all: true
-    filter: "(?i)(新|sg|singapore)"
-
-  - name: 其它地区
-    type: select
-    include-all: true
-    filter: "(?i)^(?!.*(?:🇭🇰|🇯🇵|🇺🇸|🇸🇬|🇨🇳|港|hk|hongkong|台|tw|taiwan|日|jp|japan|新|sg|singapore|美|us|unitedstates)).*"
-
-  - name: 全部节点
-    type: select
-    include-all: true
-
-  - name: 自动选择
-    type: url-test
-    include-all: true
-    tolerance: 10
+rule-providers:  
+  Lan: {<<: *c, path: ./rule-providers/Lan.list,  url: https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Lan/Lan.list}
+  Download: {<<: *c, path: ./rule-providers/Download.list,  url: https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Download/Download.list}
+  AD: {<<: *d, path: ./rule-providers/AD.list, url: https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/AdvertisingLite/AdvertisingLite.list}
+  Apple: {<<: *c, path: ./rule-providers/Apple.list,  url: https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Apple/Apple.list}
+  Github: {<<: *c, path: ./rule-providers/Github.list,  url: https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/GitHub/GitHub.list}
+  YouTube: {<<: *c, path: ./rule-providers/YouTube.list,  url: https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/YouTube/YouTube.list}
+  Google: {<<: *c, path: ./rule-providers/Google.list,  url: https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Google/Google.list}
+  Telegram: {<<: *c, path: ./rule-providers/Telegram.list,  url: https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Telegram/Telegram.list}
+  Twitter: {<<: *c, path: ./rule-providers/Twitter.list,  url: https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Twitter/Twitter.list}
+  Direct+: {<<: *c, path: ./rule-providers/Direct+.list,  url: https://cdn.jsdelivr.net/gh/tokuwakana/rules@main/Direct+.list}
+  Steam: {<<: *c, path: ./rule-providers/steamcn.list,  url: https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/SteamCN/SteamCN.list}
+  Battle: {<<: *c, path: ./rule-providers/Battle.list,  url:  https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Battle/Battle.list}
+  AI: {<<: *c, path: ./rule-providers/AI.list,  url: https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/OpenAI/OpenAI.list}
+  ChinaDomain: {<<: *c, path: ./rule-providers/ChinaDomain.list,  url: https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/China/China.list}
+  Proxy+: {<<: *c, path: ./rule-providers/Proxy+.list,  url: https://cdn.jsdelivr.net/gh/tokuwakana/rules@main/Proxy+.list}
+  ProxyMedia: {<<: *c, path: ./rule-providers/ProxyMedia.list,  url: https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/GlobalMedia/GlobalMedia.list}
+  ProxyGFW: {<<: *c, path: ./rule-providers/ProxyGFW.list,  url: https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/ProxyLite/ProxyLite.list}
+  Instagram: {<<: *c, path: ./rule-providers/Instagram.list,  url: https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@refs/heads/master/rule/Clash/Instagram/Instagram.list}
+ # speedtest: {<<: *c, format: text, path: ./rule-providers/speedtest.list,  url: https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Speedtest/Speedtest.list}
 
 rules:
-  - RULE-SET,private_ip,直连,no-resolve
-  - RULE-SET,github_domain,Github
-  - RULE-SET,twitter_domain,Twitter
-  - RULE-SET,youtube_domain,YouTube
-  - RULE-SET,google_domain,Google
-  - RULE-SET,telegram_domain,Telegram
-  - RULE-SET,netflix_domain,NETFLIX
-  - RULE-SET,bilibili_domain,哔哩哔哩
-  - RULE-SET,bahamut_domain,巴哈姆特
-  - RULE-SET,spotify_domain,Spotify
-  - RULE-SET,cn_domain,国内
-  - RULE-SET,geolocation-!cn,其他
-
-  - RULE-SET,google_ip,Google
-  - RULE-SET,netflix_ip,NETFLIX
-  - RULE-SET,telegram_ip,Telegram
-  - RULE-SET,twitter_ip,Twitter
-  - RULE-SET,cn_ip,国内
-  - MATCH,其他
-
-rule-anchor:
-  ip: &ip {type: http, interval: 86400, behavior: ipcidr, format: mrs}
-  domain: &domain {type: http, interval: 86400, behavior: domain, format: mrs}
-rule-providers:
-  private_domain:
-    <<: *domain
-    url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/private.mrs"
-  cn_domain:
-    <<: *domain
-    url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/cn.mrs"
-  biliintl_domain:
-    <<: *domain
-    url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/biliintl.mrs"
-  ehentai_domain:
-    <<: *domain
-    url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/ehentai.mrs"
-  github_domain:
-    <<: *domain
-    url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/github.mrs"
-  twitter_domain:
-    <<: *domain
-    url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/twitter.mrs"
-  youtube_domain:
-    <<: *domain
-    url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/youtube.mrs"
-  google_domain:
-    <<: *domain
-    url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/google.mrs"
-  telegram_domain:
-    <<: *domain
-    url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/telegram.mrs"
-  netflix_domain:
-    <<: *domain
-    url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/netflix.mrs"
-  bilibili_domain:
-    <<: *domain
-    url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/bilibili.mrs"
-  bahamut_domain:
-    <<: *domain
-    url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/bahamut.mrs"
-  spotify_domain:
-    <<: *domain
-    url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/spotify.mrs"
-  pixiv_domain:
-    <<: *domain
-    url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/pixiv.mrs"
-  geolocation-!cn:
-    <<: *domain
-    url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/geolocation-!cn.mrs"
-
-  private_ip:
-    <<: *ip
-    url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/private.mrs"
-  cn_ip:
-    <<: *ip
-    url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/cn.mrs"
-  google_ip:
-    <<: *ip
-    url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/google.mrs"
-  netflix_ip:
-    <<: *ip
-    url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/netflix.mrs"
-  twitter_ip:
-    <<: *ip
-    url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/twitter.mrs"
-  telegram_ip:
-    <<: *ip
-    url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/telegram.mrs"
+  - RULE-SET,Github,Proxy
+  - RULE-SET,Instagram,Proxy
+  - RULE-SET,Lan,DIRECT 
+  - RULE-SET,Download,DIRECT
+  - RULE-SET,Direct+,DIRECT
+  - RULE-SET,AD,REJECT
+  - RULE-SET,Proxy+,Proxy
+  - RULE-SET,AI,OpenAI
+  - RULE-SET,Battle,Proxy
+  - RULE-SET,Apple,Domestic
+  - RULE-SET,YouTube,Proxy
+  - RULE-SET,Google,Proxy
+  - RULE-SET,Telegram,Proxy
+  - RULE-SET,Twitter,Proxy
+  - RULE-SET,Steam,Domestic
+  - RULE-SET,ProxyMedia,Streaming
+  - RULE-SET,ProxyGFW,Proxy 
+  - RULE-SET,ChinaDomain,DIRECT
+  - GEOIP,CN,DIRECT
+  - MATCH,FINAL
