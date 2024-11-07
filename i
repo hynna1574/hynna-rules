@@ -26,7 +26,7 @@ geox-url:                           # 自定义 geodata url, 需要有代理的�
 keep-alive-interval: 15
 # fakeip 本地存储，省略DNS查询
 profile:
-    store-selected: true      # 存储 select 选择记录
+    store-selected: false      # 存储 select 选择记录
     store-fake-ip: true        # 持久化 fake-ip
 
 # Tun 配置 Windows使用
@@ -53,7 +53,7 @@ dns:
         - 114.114.114.114
         - 8.8.8.8
         - tls://223.5.5.5:853
-        - 192.168.31.1 # 如果是windows或安卓客户端可使用system，如果是软路由填写你的拨号光猫/路由器的IP地址
+        - system # 如果是windows或安卓客户端可使用system，如果是软路由填写你的拨号光猫/路由器的IP地址
 
     enhanced-mode: fake-ip
     fake-ip-range: 198.18.0.1/16
@@ -173,79 +173,244 @@ dns:
         - tls://223.5.5.5:853 # DNS over TLS
         - https://doh.pub/dns-query
         - https://dns.alidns.com/dns-query#h3=true 
-        - 192.168.31.1
+        - system
 
- # 锚点
-#pg: &pg {type: select, proxies: [Proxy, Manual, OpenAI, Streaming, Auto-Urltest, FINAL, DIRECT]}
-p: &p {type: http, interval: 86400, health-check: {enable: true, url:  http://www.gstatic.com/generate_204, interval: 300}}
-auto: &auto {type: url-test, interval: 300, tolerance: 20, lazy: true, url: 'http://www.gstatic.com/generate_204', disable-udp: false, timeout: 2000, max-failed-times: 3, hidden: true, include-all-providers: true}
-select: &select {type: select, use: [Subscribe]}
-#规则类
-c: &c {type: http, behavior: classical, interval: 86400, format: text}
-d: &d {type: http, behavior: domain, interval: 86400, format: text}
-i: &i {type: http, behavior: ipcidr, interval: 86400, format: mrs}
+#节点存放地址
+proxies:
 
+#代理组
+proxy-groups:    
+#自动选择
+    - name: "Auto"
+      type: url-test # 下面开启了自动测速
+      proxies:
+#         - test 这里填写你的自建节点
+      use:
+          - subscribe_groups 
+      url: "http://www.gstatic.com/generate_204"
+      interval: 300   #自动测速周期，单位：秒  
+#其他规则
+    - name: "PROXY"
+      type: select # 下面开启了自动测速
+      proxies:
+#         - test 这里填写你的自建节点
+          - "Auto"
+      use:
+          - subscribe_groups 
+# 奈飞      
+    - name: "Netflix"
+      type: select # 下面开启了自动测速
+      proxies:
+#         - test 这里填写你的自建节点
+          - "Auto"
+      use:
+          - subscribe_groups  
+# 迪士尼      
+    - name: "Disney"
+      type: select # 下面开启了自动测速
+      proxies:
+#         - test 这里填写你的自建节点
+          - "Auto"
+      use:
+          - subscribe_groups  
+# 油管      
+    - name: "Youtube"
+      type: select # 下面开启了自动测速
+      proxies:
+#         - test 这里填写你的自建节点
+          - "Auto"
+      use:
+          - subscribe_groups  
+# 声破天      
+    - name: "Spotify"
+      type: select # 下面开启了自动测速
+      proxies:
+#         - test 这里填写你的自建节点
+          - "Auto"
+      use:
+          - subscribe_groups 
+# Tiktok      
+    - name: "Tiktok"
+      type: select # 下面开启了自动测速
+      proxies:
+#         - test 这里填写你的自建节点
+          - "Auto"
+      use:
+          - subscribe_groups        
+# 电报      
+    - name: "Telegram"
+      type: select # 下面开启了自动测速
+      proxies:
+#         - test 这里填写你的自建节点
+          - "Auto"
+      use:
+          - subscribe_groups  
+# 推特      
+    - name: "Twitter"
+      type: select # 下面开启了自动测速
+      proxies:
+#         - test 这里填写你的自建节点
+          - "Auto"
+      use:
+          - subscribe_groups  
+# chatgpt      
+    - name: "OpenAI"
+      type: select # 下面开启了自动测速
+      proxies:
+#         - test 这里填写你的自建节点
+          - "Auto"
+      use:
+          - subscribe_groups  
+# Copilot
+    - name: "Copilot"
+      type: select # 下面开启了自动测速
+      proxies:
+#         - test 这里填写你的自建节点
+          - "Auto"
+      use:
+          - subscribe_groups    
+# Onedrive
+    - name: "Onedrive"
+      type: select # 下面开启了自动测速
+      proxies:
+#         - test 这里填写你的自建节点
+          - "Auto"
+      use:
+          - subscribe_groups      
+          
+#代理集  如果是自建节点屏蔽这里  
 proxy-providers:
-  Subscribe: {<<: *p, path: ./proxy-providers/Sub.yaml, url: https://submit.xz61.cn:22443/api/v1/client/subscribe?token=afdc1ad4db748413e0d740a883248e77}
-       
-               
-proxies: null
-
-proxy-groups:
-  #分流分组
-  - {name: Domestic, type: select, proxies: [DIRECT, Auto-Urltest, Manual]}
-  
-  - {name: Proxy, type: select, proxies: [Auto-Urltest, Manual, DIRECT]}
-  
-  - {name: Manual, <<: *select}
-  
-  - {name: OpenAI, type: select, proxies: [Manual, Auto-Urltest, DIRECT]}
-  
-  - {name: Streaming, type: select, proxies: [Auto-Urltest, Manual, DIRECT]}
-  
-  - {name: Auto-Urltest, <<: *auto}
-  
-  - {name: FINAL, type: select, proxies: [DIRECT, Auto-Urltest, Manual]}
-
-rule-providers:  
-  Lan: {<<: *c, path: ./rule-providers/Lan.list,  url: https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Lan/Lan.list}
-  Download: {<<: *c, path: ./rule-providers/Download.list,  url: https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Download/Download.list}
-  AD: {<<: *d, path: ./rule-providers/AD.list, url: https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/AdvertisingLite/AdvertisingLite.list}
-  Apple: {<<: *c, path: ./rule-providers/Apple.list,  url: https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Apple/Apple.list}
-  Github: {<<: *c, path: ./rule-providers/Github.list,  url: https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/GitHub/GitHub.list}
-  YouTube: {<<: *c, path: ./rule-providers/YouTube.list,  url: https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/YouTube/YouTube.list}
-  Google: {<<: *c, path: ./rule-providers/Google.list,  url: https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Google/Google.list}
-  Telegram: {<<: *c, path: ./rule-providers/Telegram.list,  url: https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Telegram/Telegram.list}
-  Twitter: {<<: *c, path: ./rule-providers/Twitter.list,  url: https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Twitter/Twitter.list}
-  Direct+: {<<: *c, path: ./rule-providers/Direct+.list,  url: https://cdn.jsdelivr.net/gh/tokuwakana/rules@main/Direct+.list}
-  Steam: {<<: *c, path: ./rule-providers/steamcn.list,  url: https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/SteamCN/SteamCN.list}
-  Battle: {<<: *c, path: ./rule-providers/Battle.list,  url:  https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Battle/Battle.list}
-  AI: {<<: *c, path: ./rule-providers/AI.list,  url: https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/OpenAI/OpenAI.list}
-  ChinaDomain: {<<: *c, path: ./rule-providers/ChinaDomain.list,  url: https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/China/China.list}
-  Proxy+: {<<: *c, path: ./rule-providers/Proxy+.list,  url: https://cdn.jsdelivr.net/gh/tokuwakana/rules@main/Proxy+.list}
-  ProxyMedia: {<<: *c, path: ./rule-providers/ProxyMedia.list,  url: https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/GlobalMedia/GlobalMedia.list}
-  ProxyGFW: {<<: *c, path: ./rule-providers/ProxyGFW.list,  url: https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/ProxyLite/ProxyLite.list}
-  Instagram: {<<: *c, path: ./rule-providers/Instagram.list,  url: https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@refs/heads/master/rule/Clash/Instagram/Instagram.list}
- # speedtest: {<<: *c, format: text, path: ./rule-providers/speedtest.list,  url: https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Speedtest/Speedtest.list}
-
+    #自定义机场名称subscribe_groups
+    subscribe_groups:
+        type: http # http 的 path 可空置,默认储存路径为 homedir的proxies文件夹,文件名为url的md5
+        url: "" #订阅链接存放在双引号内
+        interval: 86400 #机场订阅自动更新时间 单位：秒
+        path: ./hj_sub.yaml # 默认只允许存储在 clash 的 Home Dir，如果想存储到任意位置，添加环境变量 SKIP_SAFE_PATH_CHECK=1
+        health-check:
+            enable: true
+            interval: 165
+            # lazy: true
+            url: http://cp.cloudflare.com/generate_204
+      
+#规则集
+rule-providers:     
+    lancidr:
+        type: http
+        behavior: ipcidr
+        interval: 86400
+        path: ./ruleset/lancidr.yaml
+        url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/lancidr.txt"  
+    private:
+        type: http
+        behavior: domain
+        interval: 86400
+        path: ./ruleset/private.yaml
+        url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/private.txt"  
+    direct:
+        type: http
+        behavior: domain
+        interval: 86400
+        path: ./ruleset/direct.yaml
+        url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/direct.txt"      
+    applications:
+        type: http
+        behavior: classical
+        interval: 86400
+        path: ./ruleset/applications.yaml
+        url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/applications.txt"
+    icloud:
+        type: http
+        behavior: domain
+        interval: 86400
+        path: ./ruleset/icloud.yaml
+        url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/icloud.txt"        
+    apple:
+        type: http
+        behavior: domain
+        interval: 86400
+        path: ./ruleset/apple.yaml
+        url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/apple.txt"
+    cncidr:
+        type: http
+        behavior: ipcidr
+        interval: 86400
+        path: ./ruleset/cncidr.yaml
+        url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/cncidr.txt"  
+    gfw:
+        type: http
+        behavior: domain
+        interval: 86400   
+        path: ./ruleset/gfw.yaml        
+        url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/gfw.txt"        
+    
 rules:
-  - RULE-SET,Github,Proxy
-  - RULE-SET,Instagram,Proxy
-  - RULE-SET,Lan,DIRECT 
-  - RULE-SET,Download,DIRECT
-  - RULE-SET,Direct+,DIRECT
-  - RULE-SET,AD,REJECT
-  - RULE-SET,Proxy+,Proxy
-  - RULE-SET,AI,OpenAI
-  - RULE-SET,Battle,Proxy
-  - RULE-SET,Apple,Domestic
-  - RULE-SET,YouTube,Proxy
-  - RULE-SET,Google,Proxy
-  - RULE-SET,Telegram,Proxy
-  - RULE-SET,Twitter,Proxy
-  - RULE-SET,Steam,Domestic
-  - RULE-SET,ProxyMedia,Streaming
-  - RULE-SET,ProxyGFW,Proxy 
-  - RULE-SET,ChinaDomain,DIRECT
-  - GEOIP,CN,DIRECT
-  - MATCH,FINAL
+#域名规则
+    - RULE-SET,applications,DIRECT
+    - RULE-SET,private,DIRECT
+    - RULE-SET,icloud,DIRECT
+    - RULE-SET,apple,DIRECT
+    - GEOSITE,microsoft@cn,DIRECT 
+    - GEOSITE,steam@cn,DIRECT
+    - GEOSITE,category-games@cn,DIRECT 
+#在这里添加自定义直连规则
+    - DOMAIN,xn--ngstr-lra8j.com,PROXY
+    - DOMAIN,services.googleapis.cn,PROXY
+    - DOMAIN,mtalk.google.com,PROXY
+    - DOMAIN-SUFFIX,voidsec.com,PROXY   #voidsec 礼貌性添加所谓的dns泄露检测站
+    - DOMAIN-SUFFIX,browserleaks.com,PROXY #browserleaks 礼貌性添加所谓的dns泄露检测站
+    - DOMAIN-SUFFIX,ipleak.net,PROXY #ipleak 礼貌性添加所谓的dns泄露检测站
+
+    - DOMAIN,api.msn.com,Copilot
+    - DOMAIN,assets.msn.com,Copilot
+    - DOMAIN,copilot.microsoft.com,Copilot
+    - DOMAIN,dealczars.bing-shopping.microsoft-falcon.io,Copilot
+    - DOMAIN,edgeservices.bing.com,Copilot
+    - DOMAIN,functional.events.data.microsoft.com,Copilot
+    - DOMAIN,gateway.bingviz.microsoftapp.net,Copilot
+    - DOMAIN,location.microsoft.com,Copilot
+    - DOMAIN,login.microsoftonline.com,Copilot
+    - DOMAIN,proteus-assetstore.azurewebsites.net,Copilot
+    - DOMAIN,self.events.data.microsoft.com,Copilot
+    - DOMAIN,services.bingapis.com,Copilot
+    - DOMAIN,shopping.bing-shopping.microsoft-falcon.io,Copilot
+    - DOMAIN,sapphire.api.microsoftapp.net,Copilot
+    - DOMAIN,sr.bing.com,Copilot
+    - DOMAIN,sydney.bing.com,Copilot
+    - DOMAIN,ssl.bing.com,Copilot
+    - DOMAIN,th.bing.com,Copilot
+    - DOMAIN,www.bing.com,Copilot
+    - DOMAIN,www2.bing.com,Copilot
+    - DOMAIN,www.bingapis.com,Copilot
+    - DOMAIN-SUFFIX,edge.microsoft.com,Copilot
+    - DOMAIN,events.data.microsoft.com,REJECT #拦截微软部分遥测
+    - GEOSITE,adobe,REJECT #屏蔽adobe
+    # chatgpt
+    - GEOSITE,openai,OpenAI
+    - GEOSITE,onedrive,Onedrive
+    - GEOSITE,youtube,Youtube  
+    - GEOSITE,telegram,Telegram
+    - GEOSITE,netflix,Netflix
+    - GEOSITE,disney,Disney
+    - GEOSITE,spotify,Spotify
+    - GEOSITE,tiktok,Tiktok
+    - GEOSITE,facebook,PROXY
+    - GEOSITE,twitter,Twitter
+    - GEOSITE,google,PROXY
+    - GEOSITE,category-scholar-!cn,PROXY
+    - GEOSITE,geolocation-!cn,PROXY
+    - RULE-SET,gfw,PROXY
+    - RULE-SET,direct,DIRECT
+    - RULE-SET,lancidr,DIRECT
+    - GEOSITE,cn,DIRECT  
+#IP规则    
+    - GEOIP,private,DIRECT,no-resolve 
+    - RULE-SET,cncidr,DIRECT
+    - GEOIP,CN,DIRECT     
+    - GEOIP,telegram,Telegram,no-resolve
+    - GEOIP,netflix,Netflix,no-resolve
+    - GEOIP,google,PROXY,no-resolve
+    - GEOIP,twitter,Twitter,no-resolve
+    - GEOIP,JP,PROXY,no-resolve    
+
+#最终匹配 白名单模式
+    - MATCH,PROXY
